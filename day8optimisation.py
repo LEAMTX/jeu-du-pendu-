@@ -6,7 +6,7 @@ def charger_listealéatoire():
     try:
         with open('mot.txt', 'r') as fichier:
             
-            contenu = fichier.readline().strip()
+            contenu = fichier.read().strip()
             # separer chaque mot avec le retour à la ligne``
             listemot=contenu.splitlines()
         
@@ -60,7 +60,7 @@ def pendu():
     while "_" in chaine_cachee and compteurpenalité < 12:
     
     # A METTRE DANS LA BOUCLE DE JEU
-        lettresaisie = input("saisis une lettre : ")
+        lettresaisie = input("saisis une lettre : ").strip().upper() #convertit toutes les lettres saisies en maj -> correspond à la liste mot.txt en maj
         if lettresaisie in unelementchaine:
             print("lettre saisi est dans le mot ", lettresaisie)
             index = 0
@@ -86,30 +86,8 @@ def pendu():
    
     else: print("vous avez perdu ! Le mot était :", unelementchaine)
     print("ton score reste à",score)
-def jeu():
-    global compteurpenalité
-    """Lance une partie de pendu, puis propose de rejouer."""
-    while True: #boucle infinie 
-        # une partie
-        pendu()
 
-        if compteurpenalité >= 12:
-            print("Vous avez perdu, vie terminée!")
 
-        # demander si on rejoue (entrée robuste et simple), strip enleve les espaces vides, lower en minuscule evite la casse
-            reponse = input("Rejouer ? (o/n) : ").strip().lower()
-        if reponse not in ("o", "oui", "y", "yes"): #si la chaine de charactere saisie par l'utilisateur n'est pas o oui y yes on arrete le jeu
-            print("Fin du jeu. Merci d'avoir joué !")
-            break #force à sortir 
-        else :
-            compteurpenalité=0 #compteur de penalité réinitialisé à 0
-# --- appels/tests comme dans ton exemple ---
-pendu()
-
- 
-# penalite("ASH", "B")  # test penalité 
-# penalite("ASH", "C")
-# penalite("ASH", "A")
 def sauvegarder_progression():
     global score
     with open('sauvegarde.txt', 'w') as fichier:
@@ -131,4 +109,30 @@ def charger_progression():
 # Exemple d'utilisation
 sauvegarder_progression()
 score= charger_progression()
-print("Score: {score}")
+print("Score: "+str(score))
+
+def jeu():
+    global compteurpenalité
+    """Lance une partie de pendu, puis propose de rejouer."""
+    while True: #boucle infinie 
+        #1) nouvelle manche compteur pénalité à zéro
+        compteurpenalité=0
+        # 2) une partie (pendu partage le score)
+        pendu()
+#3) si 12 penalité défaite: 
+        if compteurpenalité >= 12:
+            print("Vous avez perdu, vie terminée!")
+
+        # demander si on rejoue dans tous les cas, strip enleve les espaces vides, lower en minuscule evite la casse
+        reponse = input("Rejouer ? (o/n) : ").strip().lower()
+        sauvegarder_progression() #pour sauvegarder le score des anciennes manches 
+        if reponse not in ("o", "oui", "y", "yes"): #si la chaine de charactere saisie par l'utilisateur n'est pas o oui y yes on arrete le jeu
+            print("Fin du jeu. Merci d'avoir joué !")
+            break #force à sortir 
+        
+jeu() #lance le mode rejouer
+
+ 
+# penalite("ASH", "B")  # test penalité 
+# penalite("ASH", "C")
+# penalite("ASH", "A")
